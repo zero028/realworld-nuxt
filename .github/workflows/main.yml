@@ -48,9 +48,8 @@ jobs:
     # 部署到服务器
     - name: Deploy
       uses: appleboy/ssh-action@master
-      with:
-      	# 在 Secrets 中，配置下面属性
-        host: ${{ secrets.HOST }}
+      with:       	
+        host: ${{ secrets.HOST }} # 在 Secrets 中，配置下面属性
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
