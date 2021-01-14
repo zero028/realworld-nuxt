@@ -40,6 +40,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
       with:
+      	# release 上传路径、名称配置
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./release.tgz
         asset_name: release.tgz
@@ -49,14 +50,16 @@ jobs:
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
+      	# 在 Secrets 中，配置下面属性
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
+        # 下面的 release 地址 ，修改为 自己的
         script: |
           rm -rf /root/realworld-nuxtjs/
           mkdir /root/realworld-nuxtjs
-          cd /root/realworld-nuxtjs 
+          cd /root/realworld-nuxtjs          
           wget https://github.com/zimeng303/realworld-nuxt/releases/latest/download/release.tgz -O release.tgz
           tar zxvf release.tgz
           npm install --production
