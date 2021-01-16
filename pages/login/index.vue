@@ -27,7 +27,6 @@
                 class="form-control form-control-lg"
                 type="text"
                 placeholder="Your Name"
-                required
               />
             </fieldset>
             <fieldset class="form-group">
@@ -36,7 +35,6 @@
                 class="form-control form-control-lg"
                 type="email"
                 placeholder="Email"
-                required
               />
             </fieldset>
             <fieldset class="form-group">
@@ -45,8 +43,6 @@
                 class="form-control form-control-lg"
                 type="password"
                 placeholder="Password"
-                required
-                minlength="8"
               />
             </fieldset>
             <button class="btn btn-lg btn-primary pull-xs-right">

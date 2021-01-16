@@ -10,6 +10,15 @@ export const getArticles = params => {
     }) 
 }
 
+// 发表文章
+export const publishArticle = data => {
+    return request({
+        method: 'POST',
+        url: '/api/articles',
+        data
+    }) 
+}
+
 // 获取关注的用户文章列表
 export const getFeedArticles = params => {
     // params 是可选的
@@ -44,6 +53,14 @@ export const getArticle = slug => {
     }) 
 }
 
+// 删除文章
+export const deleteArticle = slug => {
+    return request({
+        method: 'DELETE',
+        url: `/api/articles/${slug}`
+    }) 
+}
+
 // 获取文章评论
 export const getComments = slug => {
     return request({
@@ -53,7 +70,38 @@ export const getComments = slug => {
 }
 
 
+// 增加评论
+export const addComments = (data, slug) => {
+    return request({
+        method: 'POST',
+        url: `/api/articles/${slug}/comments`,
+        data
+    }) 
+}
+
+// 删除评论
+export const deleteComments = (slug, id) => {
+    return request({
+        method: 'DELETE',
+        url: `/api/articles/${slug}/comments/${id}`
+    }) 
+}
 
 
+// 设置 Follow
+export const setFollow = username => {
+    return request({
+        method: "POST",
+        url: `/api/profiles/${username}/follow`
+    })
+} 
+
+// 删除 Follow
+export const deleteFollow = username => {
+    return request({
+        method: "DELETE",
+        url: `/api/profiles/${username}/follow`
+    })
+} 
 
 

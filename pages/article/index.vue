@@ -11,6 +11,15 @@
     <div class="container page">
       <div class="row article-content">
         <div class="col-md-12" v-html="article.body"></div>
+        <ul class="tag-list">
+          <li
+            class="tag-default tag-pill tag-outline"
+            v-for="(tag, index) in article.tagList"
+            :key="index"
+          >
+            {{ tag }}
+          </li>
+        </ul>
       </div>
 
       <hr />
@@ -33,23 +42,24 @@ import { getArticle } from "@/api/article";
 import MarkdownIt from "markdown-it";
 
 import ArticleMeta from "./components/article-meta";
-import ArticleComments from './components/article-comments'
+import ArticleComments from "./components/article-comments";
 
 export default {
   name: "ArticleIndex",
-  async asyncData({ params }) {
+  async asyncData({ query, params, store }) {
     const { data } = await getArticle(params.slug);
     const { article } = data;
     const md = new MarkdownIt();
     // 将 Makedown 格式转换为 HTML
     article.body = md.render(article.body);
+
     return {
       article,
     };
   },
   components: {
     ArticleMeta,
-    ArticleComments
+    ArticleComments,
   },
   head() {
     return {

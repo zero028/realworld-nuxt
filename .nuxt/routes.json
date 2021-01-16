@@ -1,43 +1,51 @@
 [
   {
     "path": "/",
-    "component": "F:\\\\LaGou\\\\03-module\\\\03-min-module\\\\NuxtJs\\\\realworld-nuxtjs\\\\pages\\\\layout",
+    "component": "F:\\\\realworld-nuxt\\\\pages\\\\layout",
     "children": [
       {
         "path": "",
         "name": "home",
-        "component": "F:\\\\LaGou\\\\03-module\\\\03-min-module\\\\NuxtJs\\\\realworld-nuxtjs\\\\pages\\\\home"
+        "component": "F:\\\\realworld-nuxt\\\\pages\\\\home",
+        "_name": "_76ed1786"
       },
       {
         "path": "/login",
         "name": "login",
-        "component": "F:\\\\LaGou\\\\03-module\\\\03-min-module\\\\NuxtJs\\\\realworld-nuxtjs\\\\pages\\\\login"
+        "component": "F:\\\\realworld-nuxt\\\\pages\\\\login",
+        "_name": "_6645486a"
       },
       {
         "path": "/register",
         "name": "register",
-        "component": "F:\\\\LaGou\\\\03-module\\\\03-min-module\\\\NuxtJs\\\\realworld-nuxtjs\\\\pages\\\\login"
+        "component": "F:\\\\realworld-nuxt\\\\pages\\\\login",
+        "_name": "_6645486a"
       },
       {
         "path": "/profile/:username",
         "name": "profile",
-        "component": "F:\\\\LaGou\\\\03-module\\\\03-min-module\\\\NuxtJs\\\\realworld-nuxtjs\\\\pages\\\\profile"
+        "component": "F:\\\\realworld-nuxt\\\\pages\\\\profile",
+        "_name": "_37c734ea"
       },
       {
         "path": "/settings",
         "name": "settings",
-        "component": "F:\\\\LaGou\\\\03-module\\\\03-min-module\\\\NuxtJs\\\\realworld-nuxtjs\\\\pages\\\\settings"
+        "component": "F:\\\\realworld-nuxt\\\\pages\\\\settings",
+        "_name": "_30b05c81"
       },
       {
-        "path": "/editor",
+        "path": "/editor/:slug",
         "name": "editor",
-        "component": "F:\\\\LaGou\\\\03-module\\\\03-min-module\\\\NuxtJs\\\\realworld-nuxtjs\\\\pages\\\\editor"
+        "component": "F:\\\\realworld-nuxt\\\\pages\\\\editor",
+        "_name": "_7b7b7d6a"
       },
       {
         "path": "/article/:slug",
         "name": "article",
-        "component": "F:\\\\LaGou\\\\03-module\\\\03-min-module\\\\NuxtJs\\\\realworld-nuxtjs\\\\pages\\\\article"
+        "component": "F:\\\\realworld-nuxt\\\\pages\\\\article",
+        "_name": "_6a32ae50"
       }
-    ]
+    ],
+    "_name": "_63ddc9f0"
   }
 ]

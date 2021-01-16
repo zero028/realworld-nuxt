@@ -10,12 +10,12 @@
           <li class="nav-item">
             <!-- Add "active" class when you're on that page" -->
             <!-- exact 设置精确匹配时，才会高亮 -->
-            <nuxt-link class="nav-link active" to="/" exact>Home</nuxt-link>
+            <nuxt-link class="nav-link" to="/" exact>Home</nuxt-link>
           </li>
           <template v-if="user">
             <li class="nav-item">
               <nuxt-link class="nav-link" to="/editor">
-                <i class="ion-compose"></i>&nbsp;New Post
+                <i class="ion-compose"></i>&nbsp;New Article
               </nuxt-link>
             </li>
             <li class="nav-item">

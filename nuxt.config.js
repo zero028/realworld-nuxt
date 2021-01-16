@@ -43,7 +43,7 @@ module.exports = {
                             component: resolve(__dirname, 'pages/settings/')
                         },
                         {
-                            path: '/editor', // 创建文章子路由
+                            path: '/editor/:slug', // 创建文章子路由
                             name: 'editor',
                             component: resolve(__dirname, 'pages/editor/')
                         },

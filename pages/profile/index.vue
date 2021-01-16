@@ -4,15 +4,24 @@
       <div class="container">
         <div class="row">
           <div class="col-xs-12 col-md-10 offset-md-1">
-            <img src="http://i.imgur.com/Qr71crq.jpg" class="user-img" />
-            <h4>Eric Simons</h4>
-            <p>
-              Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda
-              looks like Peeta from the Hunger Games
-            </p>
-            <button class="btn btn-sm btn-outline-secondary action-btn">
+            <img :src="profile.image" class="user-img" />
+            <h4>{{ profile.username }}</h4>
+            <p>{{ profile.bio }}</p>
+            <nuxt-link              
+              class="btn btn-sm btn-outline-secondary action-btn"
+              to="/settings"
+              v-if="isUser"
+            >
+              <i class="ion-gear-a"></i> Edit Profile Settings
+            </nuxt-link>
+            <button
+              v-else
+              class="btn btn-sm btn-outline-secondary action-btn"
+              @click="setFollowUser"
+            >
               <i class="ion-plus-round"></i>
-              &nbsp; Follow Eric Simons
+              &nbsp; {{ profile.following ? `Unfollow` : "Follow" }}
+              {{ profile.username }}
             </button>
           </div>
         </div>
@@ -25,56 +34,104 @@
           <div class="articles-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link active" href="">My Articles</a>
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'my_articles',
+                  }"
+                  exact
+                  :to="{
+                    name: 'profile',
+                    query: {
+                      tab: 'my_articles',
+                    },
+                  }"
+                  >My Articles</nuxt-link
+                >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="">Favorited Articles</a>
+                <nuxt-link
+                  class="nav-link"
+                  :class="{
+                    active: tab === 'favorited_articles',
+                  }"
+                  exact
+                  :to="{
+                    name: 'profile',
+                    query: {
+                      tab: 'favorites',
+                    },
+                  }"
+                  >Favorited Articles</nuxt-link
+                >
               </li>
             </ul>
           </div>
 
-          <div class="article-preview">
+          <div class="article-preview" v-if="articles.length == 0">
+            No articles are here... yet.
+          </div>
+          <div
+            class="article-preview"
+            v-for="article in articles"
+            :key="article.slug"
+          >
             <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
+              <nuxt-link
+                :to="{
+                  name: 'profile',
+                  params: {
+                    username: article.author.username,
+                  },
+                }"
+                ><img :src="article.author.image"
+              /></nuxt-link>
               <div class="info">
-                <a href="" class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
+                <nuxt-link
+                  :to="{
+                    name: 'profile',
+                    params: {
+                      username: article.author.username,
+                    },
+                  }"
+                  class="author"
+                  >{{ article.author.username }}</nuxt-link
+                >
+                <span class="date">{{
+                  article.createdAt | date("MMM DD, YYYY")
+                }}</span>
               </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
+              <button
+                @click="onFavorite(article)"
+                class="btn btn-outline-primary btn-sm pull-xs-right"
+                :disabled="article.favoriteDisabled"
+              >
+                <i class="ion-heart"></i> {{ article.favoritesCount }}
               </button>
             </div>
-            <a href="" class="preview-link">
-              <h1>How to build webapps that scale</h1>
-              <p>This is the description for the post.</p>
+            <nuxt-link
+              :to="{
+                name: 'article',
+                params: {
+                  slug: article.slug,
+                },
+              }"
+              class="preview-link"
+            >
+              <h1>{{ article.title }}</h1>
+              <p>{{ article.description }}</p>
               <span>Read more...</span>
-            </a>
+            </nuxt-link>
           </div>
 
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-              <div class="info">
-                <a href="" class="author">Albert Pai</a>
-                <span class="date">January 20th</span>
-              </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-              </button>
-            </div>
-            <a href="" class="preview-link">
-              <h1>
-                The song you won't ever stop singing. No matter how hard you
-                try.
-              </h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-              <ul class="tag-list">
-                <li class="tag-default tag-pill tag-outline">Music</li>
-                <li class="tag-default tag-pill tag-outline">Song</li>
-              </ul>
-            </a>
-          </div>
+          <!-- 分页列表 -->
+          <pagination
+            :articlesCount="articlesCount"
+            :page="page"
+            :tab="tab"
+            :name="'profile'"
+          />
+          <!-- /分页列表 -->
         </div>
       </div>
     </div>
@@ -82,9 +139,83 @@
 </template>
 
 <script>
+import { getUserInfo } from "@/api/user";
+import {
+  getArticles,
+  setFollow,
+  deleteFollow,
+  addFavorite,
+  deleteFavorite,
+} from "@/api/article";
+import Pagination from "@/components/Pagination";
+
 export default {
-  middleware: 'authenticated',
+  middleware: "authenticated",
   name: "UserProfile",
+  components: {
+    Pagination,
+  },
+  async asyncData({ query, params, store }) {
+    const username = params.username;
+    // 判断是否是当前用户的文章
+    const isUser = username === store.state.user.username;
+
+    const page = Number.parseInt(query.page || 1);
+    const limit = 20;
+    const tab = query.tab || "my_articles";
+    const publicParams = {
+      limit,
+      offset: (page - 1) * limit,
+    };
+    tab === "my_articles"
+      ? (publicParams.author = username)
+      : (publicParams.favorited = username);
+    const [userRes, articleRes] = await Promise.all([
+      getUserInfo(username),
+      getArticles(publicParams),
+    ]);
+
+    const { profile } = userRes.data;
+    const { articles, articlesCount } = articleRes.data;
+
+    // 防止重复点击
+    articles.forEach((article) => (article.favoriteDisabled = false));
+
+    return {
+      isUser,
+      profile,
+      articles,
+      articlesCount,
+      limit,
+      page,
+      tab,
+    };
+  },
+  watchQuery: ["page", "tab"],
+  methods: {
+    async setFollowUser() {
+      const { username } = this.$route.params;
+      const { data } = this.profile.following
+        ? await deleteFollow(username)
+        : await setFollow(username);
+      this.profile = data.profile;
+    },
+    async onFavorite(article) {
+      article.favoriteDisabled = true;
+      if (article.favorited) {
+        // 取消点赞
+        await deleteFavorite(article.slug);
+        article.favorited = false;
+        article.favoritesCount -= 1;
+      } else {
+        // 添加点赞
+        await addFavorite(article.slug);
+        article.favorited = true;
+        article.favoritesCount += 1;
+      }
+      article.favoriteDisabled = false;
+    },
+  },
 };
 </script>
 

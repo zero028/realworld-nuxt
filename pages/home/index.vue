@@ -91,7 +91,9 @@
                   class="author"
                   >{{ article.author.username }}</nuxt-link
                 >
-                <span class="date">{{ article.createdAt | date('MMM DD, YYYY') }}</span>
+                <span class="date">{{
+                  article.createdAt | date("MMM DD, YYYY")
+                }}</span>
               </div>
               <button
                 class="btn btn-outline-primary btn-sm pull-xs-right"
@@ -115,36 +117,17 @@
             >
               <h1>{{ article.title }}</h1>
               <p>{{ article.description }}</p>
-              <span></span>
+              <span>Read more...</span>
             </nuxt-link>
           </div>
 
           <!-- 分页列表 -->
-          <nav>
-            <ul class="pagination">
-              <li
-                class="page-item"
-                v-for="item in totalPage"
-                :key="item"
-                :class="{
-                  active: item === page,
-                }"
-              >
-                <nuxt-link
-                  class="page-link"
-                  :to="{
-                    name: 'home',
-                    query: {
-                      page: item,
-                      tag: $route.query.tag,
-                      tab: tab,
-                    },
-                  }"
-                  >{{ item }}</nuxt-link
-                >
-              </li>
-            </ul>
-          </nav>
+          <pagination
+            :articlesCount="articlesCount"
+            :page="page"
+            :tab="tab"
+            :name="'home'"
+          />
           <!-- /分页列表 -->
         </div>
 
@@ -175,12 +158,25 @@
 </template>
 
 <script>
-import { getArticles, getFeedArticles, addFavorite, deleteFavorite } from "@/api/article";
-import { getTags } from "@/api/tag";
 import { mapState } from "vuex";
+import {
+  getArticles,
+  getFeedArticles,
+  addFavorite,
+  deleteFavorite,
+} from "@/api/article";
+import { getTags } from "@/api/tag";
+
+import Pagination from "@/components/Pagination";
+
+// 仅在客户端加载 js-cookie 包
+const Cookie = process.client ? require("js-cookie") : undefined;
 
 export default {
   name: "HomePage",
+  components: {
+    Pagination,
+  },
   // 需要 SEO
   async asyncData({ query, store }) {
     // query 存储所有的查询条件
@@ -205,8 +201,8 @@ export default {
     const { tags } = tagRes.data;
 
     // 防止重复点击
-    articles.forEach(article => article.favoriteDisabled = false)
-
+    articles.forEach((article) => (article.favoriteDisabled = false));
+    
     return {
       articles,
       articlesCount,
@@ -222,29 +218,25 @@ export default {
   // 注意，需要刷新整个页面，否则不起作用
   watchQuery: ["page", "tag", "tab"],
   computed: {
-    // 总页码
-    totalPage() {
-      return Math.ceil(this.articlesCount / this.limit);
-    },
     ...mapState(["user"]),
   },
   methods: {
-    async onFavorite (article) {
-      article.favoriteDisabled = true
+    async onFavorite(article) {
+      article.favoriteDisabled = true;
       if (article.favorited) {
         // 取消点赞
-        await deleteFavorite(article.slug)
-        article.favorited = false
-        article.favoritesCount -= 1
+        await deleteFavorite(article.slug);
+        article.favorited = false;
+        article.favoritesCount -= 1;
       } else {
         // 添加点赞
-        await addFavorite(article.slug)
-        article.favorited = true
-        article.favoritesCount += 1
+        await addFavorite(article.slug);
+        article.favorited = true;
+        article.favoritesCount += 1;
       }
-      article.favoriteDisabled = false
-    }
-  }
+      article.favoriteDisabled = false;
+    },
+  },
 };
 </script>
 
